@@ -6,7 +6,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from keras.utils import plot_model
 from keras.models import Model, Sequential
-from keras.layers import Input
+from keras.layers import Input, CuDNNLSTM
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Embedding
@@ -123,13 +123,17 @@ def define_model(vocab_size, max_length):
 
   # embedding
   inputs2 = Input(shape=(max_length,))
-  emb2 = Embedding(vocab_size, EMBEDDING_DIM, mask_zero=True)(inputs2)
+  # emb2 = Embedding(vocab_size, EMBEDDING_DIM, mask_zero=True)(inputs2)
 
+  se1 = Embedding(vocab_size, 256)(inputs2)
+  se2 = Dropout(0.5)(se1)
+  se3 = CuDNNLSTM(256)(se2)
   # merge inputs
-  merged = concatenate([fe3, emb2])
+  merged = concatenate([fe3, se3])
   # language model (decoder)
-  lm2 = LSTM(1000, return_sequences=False)(merged)
-  lm3 = Dense(500, activation='relu')(lm2)
+  # lm2 = LSTM(1000, return_sequences=False)(merged)
+  # lm3 = Dense(500, activation='relu')(lm2)
+  lm2 = Dense(256,activation='relu')(merged)
   outputs = Dense(vocab_size, activation='softmax')(lm2)
 
   # tie it together [image, seq] [word]
