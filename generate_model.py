@@ -129,7 +129,7 @@ def define_model(vocab_size, max_length):
   merged = concatenate([fe3, emb2])
   # language model (decoder)
   lm2 = LSTM(1000, return_sequences=False)(merged)
-  #lm3 = Dense(500, activation='relu')(lm2)
+  lm3 = Dense(500, activation='relu')(lm2)
   outputs = Dense(vocab_size, activation='softmax')(lm2)
 
   # tie it together [image, seq] [word]

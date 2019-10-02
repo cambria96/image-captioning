@@ -1,7 +1,7 @@
 from os import listdir
 from pickle import dump
 from keras.applications.vgg16 import VGG16
-from keras.applications.resnet50 import ResNet50
+from keras.applications.resnet import ResNet152
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 from keras.applications.vgg16 import preprocess_input
@@ -23,7 +23,7 @@ def load_image(path):
 def extract_features(directory,is_attention=False):
   # load the model
   if is_attention:
-    model = ResNet50()
+    model = ResNet152()
     model.layers.pop()
     # extract final 49x512 conv layer for context vectors
     final_conv = Reshape([49,512])(model.layers[-4].output)
@@ -31,7 +31,7 @@ def extract_features(directory,is_attention=False):
     print(model.summary())
     features = dict()
   else:
-    model = ResNet50()
+    model = ResNet152()
     # re-structure the model
     model.layers.pop()
     model = Model(inputs=model.inputs, outputs=model.layers[-1].output)
