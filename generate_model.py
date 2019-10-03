@@ -119,7 +119,7 @@ def define_model(vocab_size, max_length):
   inputs1 = Input(shape=(2048,))
   fe1 = Dropout(0.4)(inputs1)
   fe2 = Dense(EMBEDDING_DIM, activation='relu')(fe1)
-  fe3 = RepeatVector(max_length)(fe2)
+  # fe3 = RepeatVector(max_length)(fe2)
 
   # embedding
   inputs2 = Input(shape=(max_length,))
@@ -129,12 +129,12 @@ def define_model(vocab_size, max_length):
   se2 = Dropout(0.5)(se1)
   se3 = CuDNNLSTM(256)(se2)
   # merge inputs
-  merged = concatenate([fe3, se3])
+  merged = concatenate([fe2, se3])
   # language model (decoder)
-  # lm2 = LSTM(1000, return_sequences=False)(merged)
-  # lm3 = Dense(500, activation='relu')(lm2)
-  lm2 = Dense(256,activation='relu')(merged)
-  outputs = Dense(vocab_size, activation='softmax')(lm2)
+  lm2 = LSTM(1000, return_sequences=False)(merged)
+  lm3 = Dense(500, activation='relu')(lm2)
+  lm4 = Dense(1000,activation='relu')(lm3)
+  outputs = Dense(vocab_size, activation='softmax')(lm4)
 
   # tie it together [image, seq] [word]
   model = Model(inputs=[inputs1, inputs2], outputs=outputs)
